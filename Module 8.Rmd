@@ -1,0 +1,379 @@
+---
+title: "Module 8"
+author: "vivian wu"
+date: "2025-10-11"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Module 8 Quick Check 1 (Goodness of Fit)
+
+## Question 1
+
+Assume that the Mars company claims that it mixes M&M's Milk Chocolate Candies in the following proportions: (Brown= 0.13), (Yellow= 0.14), (Red = 0.13), (Blue: 0.24), (Orange =  0.20), and (Green= 0.16). To test this claim, two bags of M&M's are randomly chosen, and the following counts are observed:
+
+Brown: 121
+Yellow: 84
+Red: 118
+Blue: 226
+Orange: 226
+Green: 123
+In your Rscript, obtain the expected cell count. Here, share the expected count for blue M&Ms using 2 decimals.
+
+```{r}
+p <- c(0.13, 0.14, 0.13, 0.24, 0.20, 0.16)
+obs <- c(121, 84, 118, 226, 226, 123)
+
+#expected count
+n=sum(obs)
+p=0.24 #probability of blue
+exp=n*p
+exp
+```
+
+## Quesiton 2
+
+Test whether the color proportions the Mars company claims to use are credible. What is the likelihood ratio test statistic? Use three decimals.
+
+```{r}
+p <- c(0.13, 0.14, 0.13, 0.24, 0.20, 0.16)
+exp=n*p
+G2=2*sum(obs*log(obs/exp))
+G2
+```
+
+## Question 3
+
+Test whether the color proportions the Mars company claims to use are credible. What are the degrees of freedom needed for this test?
+
+```{r}
+# degrees of freedom
+# 6 number of categories so k=6, company gave exact probabilities so we use k-1
+df=6-1
+df
+```
+
+
+## Question 4
+
+Test whether the color proportions the Mars company claims to use are credible. What is the p-value?
+
+```{r}
+p_value=1-pchisq(q=G2, df)
+p_value
+```
+
+## Question 5
+
+Test whether the color proportions the Mars company claims to use are credible using alpha=0.01. What is your conclusion?
+
+- p_value<0.01, reject H_0
+- H_0: company claim credible
+- H_a: company claim not credible
+- conculsion: company claim not credible
+
+## Question 6
+
+A rectangular screen of 324×480 pixels was constructed for an experiment in visual perception. The researchers devised a computer algorithm to color each pixel independently and identically, black with probability p=0.29 or white with probability 1-p=0.71.
+To validate their coloring algorithm, the researchers randomly selected n=1000 nonoverlapping squares of 4×4 pixels and counted the number of black pixels in each square. 
+Let X_i denote the number of black pixels in square i.  If the algorithm performed as intended, then X_i~Binomial(16,0.29) and the probabilities P(X_i=j), j subset X(S)={0,…,16}, can be computed by the R command dbinom(0:16,16,.29). We partition X(S)as follows: E1={0,1},Ej={j} for j=2,…,8, and E9={9,…,16}.
+
+```{r}
+# The following syntax provides the observed cell counts per cell:
+cells <- 1:9
+observed_counts <- c(30,93,159, 184, 195, 171, 92, 45, 31)
+table(rep(cells,observed_counts))
+```
+
+Based on these data, we want to perform a test to determine whether or not the algorithm performs as intended. What should be the null hypothesis?
+
+- H_0: The number of black pixels in each 4×4
+ square follows a binomial distribution with probability 0.29.
+- H_1: The number of black pixels in each 4×4
+ square does not follow a binomial distribution with probability 0.29.
+ 
+## Question 7
+
+Based on these data, we want to perform a test to determine whether or not the algorithm performs as intended. Calculate the expected cell counts and save the code and output in your Rscript. Here, report the expected count for cell E1. Use 3 decimals.
+
+Hint: Use dbinom() for the probabilities and the total observed count to find the expected counts. Observe that cell E1. contains two possible outcomes. 
+
+```{r}
+
+# Parameters
+n = 16  # pixels per square
+p = 0.29       # probability of black pixel
+n_observed = 1000  # total number of squares observed
+
+# Calculate theoretical probabilities for each outcome (0 to 16 black pixels)
+p0 <- dbinom(0, size = 16, prob = p)
+p1 <- dbinom(1, size = 16, prob = p)
+prob_E1 <- p0 + p1
+expected_E1 = n_observed* prob_E1
+expected_E1
+
+```
+
+
+## Question 8
+
+Continue working with the pixel problem. We want to perform a test to determine whether or not the algorithm performs as intended.  What is the likelihood ratio test statistic, G2? Answer with two decimals.
+
+```{r}
+
+# Calculate theoretical probabilities for each outcome (0 to 16 black pixels)
+probs <- dbinom(0:16, size = 16, prob = p)
+
+# Cell E2 to E8: - individual probabilities
+expected_E2 <- probs[3] * n_observed
+expected_E3 <- probs[4] * n_observed
+expected_E4 <- probs[5] * n_observed
+expected_E5 <- probs[6] * n_observed
+expected_E6 <- probs[7] * n_observed
+expected_E7 <- probs[8] * n_observed
+expected_E8 <- probs[9] * n_observed
+
+# Cell E9:- sum probabilities for 9 through 16
+expected_E9 <- sum(probs[10:17]) * n_observed
+
+#all expected counts
+expected_counts <- c(expected_E1, expected_E2, expected_E3, expected_E4, 
+                     expected_E5, expected_E6, expected_E7, expected_E8, expected_E9)
+
+```
+
+```{r}
+G2=2*sum(observed_counts*log(observed_counts/expected_counts))
+G2
+```
+
+## Quesiton 9
+
+Continue working with the pixel problem. We want to perform a test to determine whether or not the algorithm performs as intended. Recall that we ended up with 9 cells, and if the algorithm performs as intended, the distribution of the number of black pixels per square is given by X~Binomial (16,0.29).  What are the degrees of freedom?
+
+```{r}
+#df=(number of cells)-(number of parameters estimated)-1
+number_of_cells=9
+number_of_parameters_est=0
+df=(number_of_cells)-(number_of_parameters_est)-1
+df
+```
+
+## Question 10
+
+Continue working with the pixel problem. We want to perform a test to determine whether or not the algorithm performs as intended. What is the p-value? Answer with three decimals. 
+
+```{r}
+p_value=1-pchisq(q=G2, df=8)
+p_value
+```
+
+## Question 11
+
+Continue working with the pixel problem. We want to perform a test to determine whether or not the algorithm performs as intended. Using alpha=0.07, what can you conclude? Select the most appropriate statement.
+
+- p_value> 0.07
+- failed to reject null
+- The number of black pixels in each 4×4 square follows a binomial distribution with probability 0.29.
+- We do not have enough evidence to conclude that the algorithm does not perform as intended.
+
+
+## Question 12
+
+Continue working with the pixel problem with a small change. Everything remains the same in the setup, including the same data collected and the number of cells used, but now the distribution of the number of black pixels per square is assumed to be given by X~Binomial(16,p)
+ where p is not given. In addition, you have used the observed data to estimate this probability and obtained phat =0.29, the same value as before, but now estimated from data. Select all the quantities that would change in your test.
+ 
+- Dimension of the restricted set of probabilities
+- The pvalue
+- Degrees of freedom
+
+# Module 8 Quick Check 2 (Independence)
+
+## Quesiton 1
+
+A study of Hodgkin’s disease classified n=538 patients by histological type (LP = lymphocyte predominance, NS = nodular sclerosis, MC = mixed cellularity, LD = lymphocyte depletion) and response to treatment (positive, partial, none), resulting in the following 4 × 3 contingency table:
+
+obs <- matrix(c(74, 68, 154, 18, 
+                    18, 16, 54, 10, 
+                    12, 12, 58, 44),
+              nrow = 4, ncol = 3)
+rownames(obs) <- c("LP", "NS", "MC", "LD")
+colnames(obs) <- c("Positive", "Partial", "None")
+obs
+
+In your Rscript, obtain the contingency table for the expected cell counts. Here, provide the expected cell count for histological type MC and positive response to treatment. Use two decimals.
+
+```{r}
+obs <- matrix(c(74, 68, 154, 18, 
+                    18, 16, 54, 10, 
+                    12, 12, 58, 44),
+              nrow = 4, ncol = 3)
+rownames(obs) <- c("LP", "NS", "MC", "LD")
+colnames(obs) <- c("Positive", "Partial", "None")
+obs
+```
+```{r}
+# Calculate row totals, column totals, and grand total
+row_totals <- rowSums(obs)
+col_totals <- colSums(obs)
+grand_total <- sum(obs)
+
+#expected
+exp=row_totals %o% col_totals/grand_total
+exp
+```
+```{r}
+exp["MC", "Positive"]
+```
+
+## Question 2
+
+Continue working with the Hodgkin’s disease problem. What is the test statistic? Use three decimals.
+
+```{r}
+G2=2*sum(obs*log(obs/exp))
+G2
+```
+
+## Question 3
+
+Continue working with the Hodgkin’s disease problem. What are the degrees of freedom?
+
+- # of row=3
+- # of columns= 4
+
+```{r}
+df=(3-1)*(4-1)
+df
+```
+
+## Question 4
+
+Continue working with the Hodgkin’s disease problem. What is the p-value?
+
+```{r}
+p_value=1-pchisq(G2, df)
+p_value
+```
+
+## Question 5
+
+Continue working with the Hodgkin’s disease problem. What is your conclusion? Select the most appropriate one
+
+- H-0: response to treatment and type independent
+- H_a: response to treatment and type related
+
+- conclusion: p_value close to 0, reject null hypothesis.
+- The histological type and response to treatment are related.
+
+
+# Quick check 3 (Revisiting the One- and Two-Sample Problems with the t.test() function)
+
+## Question 1
+
+In a solar power system study, experiments were carried out on models in a controlled environment to determine how two photovoltaic cells affected the system's energy storage. The controlled environment could simulate various weather conditions. The model system was subjected to 18 different weather conditions with each type of photovoltaic cell, and the energy stored (in watt-hours) was recorded. Cell 2 was significantly more cost-effective than Cell 1. The question of interest is whether cell 1's energy storage was greater than cell 2's. 
+The R code below builds the data frame solar with the measurements obtained in those 18 different weather conditions:
+
+```{r}
+solar <- matrix(c(2.23, 1.82, 2.55, 2.42, 7.99, 8.26, 4.09, 3.46,
+                  9.62, 9.77, 1.59, 1.40, 8.98, 8.88, 0.82, 0.87,
+                  10.83, 11.20, 1.54, 1.33, 10.75, 10.32, 5.79, 5.87,
+                  5.91, 6.44, 5.79, 5.87, 5.50, 5.30, 9.96, 9.82,
+                  1.92, 1.69, 7.38, 7.41),
+                nrow = 18, ncol = 2, byrow = TRUE)
+solar <- as.data.frame(solar)
+colnames(solar) <- c("cell1", "cell2")
+solar
+```
+
+- experimental unit: a weather condition
+
+## Quesiton 2
+
+What is the parameter of interest with the appropriate meaning?
+
+- mu is the average of the differences in energy storage, cell 1 minus cell 2, for all possible weather conditions.
+
+## Question 3
+
+If using the difference of values or means, do cell 1 minus cell 2. What is the null hypothesis?
+
+- H_0: mu <=0 
+- H_1: mu > 0
+
+## Question 4
+
+If using the difference of values or means, do cell 1 minus cell 2. Use the t.test() function to perform the test. What is the test statistic? Answer with three decimals. 
+
+```{r}
+diff=solar$cell1-solar$cell2
+tstat=t.test(diff, alternative="greater")
+tstat
+```
+
+## Quesiton 5
+
+Continue working on the solar power system problem. What is the p-value? Use three decimals. 
+
+- 0.190
+
+## Quesiton 6
+
+Continue working on the solar power system problem.  The question of interest is whether cell 1's energy storage was greater than cell 2's. What is your conclusion?
+
+- p_value > 0.05
+- failed to reject null. 
+
+## Question 7
+
+Use data frame Baumann from package carData. Please read the description of the data in R. We are interested in determining whether the innovative method DRTA improves teaching learning more than the traditional method Basal. Assume that the data is random and that the sample of students using DRTA is independent of those using Basal. What is the null hypothesis if you perform improvement on Basal minus improvement on DRTA?
+
+```{r}
+library(carData)
+help("Baumann")
+```
+ 
+- comparing two teaching methods:
+1. Basal (traditional)
+2. DRTA (innovative)
+
+find whether DRTA improves learning more than Basal.
+
+ -H_0: difference >= 0
+- H_a: difference <0
+
+## Question 8 and 9
+
+Use post.test.1 - pretest.1 to measure improvement.
+
+Use t.test() to perform the required test. What is your test statistic? Use two decimals.
+
+Hint: To separate the teaching methods into different data frames, you can use the function subset(). For example, the code:
+data.B <- subset(Baumann, subset = (group == "Basal"))
+creates a new data frame called data.B, which only contains information on the teaching method Basal.
+
+```{r}
+data.B <- subset(Baumann, group == "Basal")
+data.D <- subset(Baumann, group == "DRTA")
+
+# measure improvement.
+improve.B = data.B$post.test.1 - data.B$pretest.1
+improve.D = data.D$post.test.1 - data.D$pretest.1
+
+#t-test
+tstat= t.test(improve.B, improve.D, alternative = "less", var.equal = FALSE)
+tstat
+```
+
+## Question 10
+
+Continue using data frame Baumann from package carData. Obtain a 99% confidence interval for the difference in improvement between Basal and DRTA. Use post.test.1 - pretest.1 to measure improvement.
+
+Use the t.test() function to obtain the interval. What is the lower bound? Answer with two decimals.
+
+```{r}
+tstat= t.test(improve.B, improve.D, conf.level = 0.99)
+tstat
+```
+
